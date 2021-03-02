@@ -18,6 +18,9 @@ import Tempura
 struct SettingsVM: ViewModelWithLocalState {
   enum Setting: Equatable {
     case loadData
+    case reportOutcome
+    case healthPassport
+    case checkStatus
     case faq
     case tos
     case privacy
@@ -87,7 +90,7 @@ struct SettingsVM: ViewModelWithLocalState {
   static let defaultSections: [Section] = [
     Section(
       header: .data,
-      settings: [.loadData]
+        settings: [.loadData, .reportOutcome, .healthPassport, .checkStatus]
     ),
 
     Section(
