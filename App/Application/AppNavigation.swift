@@ -94,6 +94,9 @@ extension AppDelegate {
 
     case .qrScanner:
         mainViewController = HomeNC(store: store)
+    case .confirmation:
+        mainViewController = ConfirmationVC(store: store, localState: ConfirmationLS(title: "Dati caricati con successo", details: "Grazie per il tuo contributo"))
+
 //            mainViewController = ScannerVC(store: store, localState: ScannerLS())
 
     default:
@@ -453,7 +456,6 @@ extension SettingsNC: RoutableWithConfiguration {
         return ChooseDataUploadModeVC(store: self.store, localState: ChooseDataUploadModeLS())
                 },
         .show(Screen.qrScanner): .push { context in
-            
             return ScannerVC(store: self.store, localState: ScannerLS())
         },
       .show(Screen.faq): .push { _ in
@@ -518,6 +520,7 @@ extension HomeNC: RoutableWithConfiguration {
         .show(Screen.qrScanner): .push { _ in
             ScannerVC(store: self.store, localState: ScannerLS())
         },
+
         
       .hide(Screen.qrScanner): .pop,
       .hide(Screen.uploadData): .pop,

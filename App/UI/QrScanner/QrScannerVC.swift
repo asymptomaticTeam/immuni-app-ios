@@ -10,6 +10,8 @@ import Foundation
 import Katana
 import Tempura
 import UIKit
+import Models
+import Networking
 
 class ScannerVC: ViewControllerWithLocalState<ScannerView>,
     AVCaptureMetadataOutputObjectsDelegate
@@ -93,12 +95,23 @@ class ScannerVC: ViewControllerWithLocalState<ScannerView>,
 
     override func setupInteraction() {
         rootView.didTapBack = { [weak self] in
-            self?.dispatch(Hide(Screen.qrScanner, animated: true))
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { 
+                self?.dispatch(Hide(Screen.qrScanner, animated: true))
+               // Code you want to be delayed
+            }
+            
+            
         }
 
-        rootView.didTapScannerAction = { [weak self] in
+        rootView.didTapScanAction = { [weak self] in
             self?.scan()
         }
+        rootView.didTapUploadAction = { [weak self] in
+//            self?.dispatch(Logic.DataUpload.ConfirmDataQr())
+//            try context.awaitDispatch(ShowConfirmData(code: self.code))
+        }
+
     }
 }
 

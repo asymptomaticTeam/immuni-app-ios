@@ -316,6 +316,27 @@ extension Logic.DataUpload {
       try context.awaitDispatch(Hide(Screen.uploadDataAutonomous, animated: true))
     }
   }
+    
+    /// Handles the data confirmation flow
+    struct ConfirmDataQr: AppSideEffect {
+
+      func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+        let state = context.getState()
+
+//        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+        try await(Promise<Void>(resolved: ()).defer(3))
+        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+        try await(Promise<Void>(resolved: ()).defer(3))
+
+//        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+
+        
+        try context.awaitDispatch(Hide(Screen.confirmation, animated: true))
+//        try context.awaitDispatch(Hide(Screen.confirmUpload, animated: true))
+//        try context.awaitDispatch(Hide(Screen.uploadData, animated: true))
+//        try context.awaitDispatch(Hide(Screen.uploadDataAutonomous, animated: true))
+      }
+    }
 
   /// Checks that the exposure notifications permissions is authorized
   struct AssertExposureNotificationPermissionGranted: SideEffect {

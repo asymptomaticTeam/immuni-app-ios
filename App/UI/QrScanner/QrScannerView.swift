@@ -2,6 +2,7 @@
 import Foundation
 import Models
 import Tempura
+import Lottie
 
 struct ScannerVM: ViewModelWithLocalState {}
 
@@ -24,14 +25,19 @@ class ScannerView: UIView, ViewControllerModellableView {
 
     private let backgroundGradientView = GradientView()
     private let title = UILabel()
+//    private let code = UILabel()
     private var backButton = ImageButton()
     let scrollView = UIScrollView()
 
     private let scannerCard = ScannerCellView()
+    let checkmark = AnimationView()
+    let titleLabel = UILabel()
+    let detailsLabel = UILabel()
 
     var didTapBack: Interaction?
-    var didTapScannerAction: Interaction?
-
+    var didTapScanAction: Interaction?
+    var didTapUploadAction: Interaction?
+    var success = false
     // MARK: - Setup
 
     func setup() {
@@ -39,26 +45,48 @@ class ScannerView: UIView, ViewControllerModellableView {
         addSubview(scrollView)
         addSubview(title)
         addSubview(backButton)
+        self.addSubview(self.checkmark)
+        self.addSubview(self.titleLabel)
+        self.addSubview(self.detailsLabel)
+//        addSubview(code)
+
 
         scrollView.addSubview(scannerCard)
 
         backButton.on(.touchUpInside) { [weak self] _ in
             self?.didTapBack?()
         }
-        scannerCard.didTapAction = { [weak self] in
-            self?.didTapScannerAction?()
+        scannerCard.didTapScanAction = { [weak self] in
+            self?.didTapScanAction?()
         }
+        scannerCard.didTapUploadAction = { [weak self] in
+            self?.success.toggle()
+            self?.subviews.first?.removeFromSuperview()
+            self?.subviews.first?.removeFromSuperview()
+            self?.subviews.first?.removeFromSuperview()
+            self?.subviews.first?.removeFromSuperview()
+            self?.setNeedsLayout()
+            self?.didTapBack?()
+        }
+        
 
     }
 
     // MARK: - Style
 
     func style() {
+        Self.Style.root(self)
+        Self.Style.animation(self.checkmark, animation: AnimationAsset.confirmationCheck.animation)
         Self.Style.background(self)
         Self.Style.backgroundGradient(backgroundGradientView)
 
         Self.Style.scrollView(scrollView)
         Self.Style.title(title)
+        
+        Self.Style.titleLabel(self.titleLabel, content: "Dati caricati con successo")
+        Self.Style.details(self.detailsLabel, details: "Grazie per il tuo contributo")
+
+        
 
         SharedStyle.navigationBackButton(backButton)
     }
@@ -75,9 +103,9 @@ class ScannerView: UIView, ViewControllerModellableView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
+        if !success {
         backgroundGradientView.pin.all()
-
+        
         backButton.pin
             .left(Self.horizontalSpacing)
             .top(universalSafeAreaInsets.top + 20)
@@ -99,8 +127,25 @@ class ScannerView: UIView, ViewControllerModellableView {
             .sizeToFit(.width)
             .marginTop(25)
 
-
         scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: scannerCard.frame.maxY)
+        }
+        else {
+            self.titleLabel.pin
+              .horizontally(30)
+              .sizeToFit(.width)
+              .top(to: self.edge.vCenter)
+
+            self.checkmark.pin
+              .size(100)
+              .hCenter()
+              .bottom(to: self.edge.vCenter)
+
+            self.detailsLabel.pin
+              .horizontally(30)
+              .below(of: self.titleLabel)
+              .marginTop(20)
+              .sizeToFit(.width)
+        }
     }
 }
 
@@ -108,6 +153,44 @@ class ScannerView: UIView, ViewControllerModellableView {
 
 private extension ScannerView {
     enum Style {
+        
+
+        static func root(_ view: UIView) {
+          view.backgroundColor = Palette.white
+        }
+
+        static func animation(_ view: AnimationView, animation: Animation?) {
+          view.animation = animation
+          view.loopMode = .playOnce
+          view.playIfPossible()
+        }
+
+        static func titleLabel(_ label: UILabel, content: String) {
+          let style = TextStyles.h1.byAdding(
+            .color(Palette.grayDark),
+            .alignment(.center)
+          )
+
+          TempuraStyles.styleStandardLabel(
+            label,
+            content: content,
+            style: style
+          )
+        }
+
+        static func details(_ label: UILabel, details: String?) {
+          let style = TextStyles.p.byAdding(
+            .color(Palette.grayNormal),
+            .alignment(.center)
+          )
+
+          TempuraStyles.styleStandardLabel(
+            label,
+            content: details,
+            style: style
+          )
+        
+      }
         static func background(_ view: UIView) {
             view.backgroundColor = Palette.grayWhite
         }

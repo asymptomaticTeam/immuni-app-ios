@@ -33,6 +33,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     static let buttonMinHeight: CGFloat = 55
     static let containerMinHeight: CGFloat = 245
     static let orderRightMargin: CGFloat = UIDevice.getByScreen(normal: 70, narrow: 50)
+    var heightContainer: CGFloat = 220
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -49,10 +50,15 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     private let container = UIView()
     private let title = UILabel()
     private let message = UILabel()
-    private var actionButton = ButtonWithInsets()
+    private let codeMessage = UILabel()
+    private var scanButton = ButtonWithInsets()
+    private var uploadButton = ButtonWithInsets()
     private var imageContent = UIImageView()
+    private let code = UILabel()
+    private var carica = false
 
-    var didTapAction: Interaction?
+    var didTapUploadAction: Interaction?
+    var didTapScanAction: Interaction?
 
     // MARK: - Setup
 
@@ -60,13 +66,39 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
         addSubview(container)
         container.addSubview(title)
         container.addSubview(message)
-        container.addSubview(actionButton)
+        container.addSubview(codeMessage)
+        container.addSubview(uploadButton)
+        container.addSubview(scanButton)
         container.addSubview(imageContent)
+        container.addSubview(code)
 
-        container.accessibilityElements = [title, message, actionButton, imageContent]
+        container.accessibilityElements = [title, message, codeMessage, scanButton, uploadButton, imageContent]
 
-        actionButton.on(.touchUpInside) { [weak self] _ in
-            self?.didTapAction?()
+        uploadButton.on(.touchUpInside) { [weak self] _ in
+          
+
+//            print("gigionre")
+//            guard let self = self else { return }
+////            self.setNeedsLayout()
+//            self.didTapUploadAction?()
+//            self.setNeedsLayout()
+
+        }
+        scanButton.on(.touchUpInside) { [weak self] _ in
+            guard let self = self else { return }
+            
+            Self.Style.code(self.code, codeParts: NSAttributedString(string: "74936292"))
+            SharedStyle.primaryButton(self.scanButton, title: "Carica")
+
+            self.setNeedsLayout()
+            
+            if self.carica {
+                self.didTapUploadAction?()
+            }
+            else{
+                self.carica.toggle()
+                self.didTapScanAction?()
+            }
         }
     }
 
@@ -75,9 +107,12 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     func style() {
         Self.Style.container(container)
         Self.Style.title(title)
-        Self.Style.message(message)
-
-        SharedStyle.primaryButton(actionButton, title: "Scansiona")
+        Self.Style.message(message, message: "Premi su scansiona per proseguire")
+        Self.Style.message(codeMessage, message: "Ecco il tuo codice")
+        let attString = NSAttributedString(string: "")
+        Self.Style.code(self.code, codeParts: attString)
+        SharedStyle.primaryButton(scanButton, title: "Scansiona")
+        SharedStyle.primaryButton(uploadButton, title: "Carica")
         Self.Style.imageContent(imageContent, image: Asset.Settings.UploadData.stethoscope.image)
         
     }
@@ -100,7 +135,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             .vertically()
             .horizontally(25)
             .marginTop(Self.labelTopMargin)
-            .height(240)
+            .height(280)
 
         title.pin
             .left(Self.labelLeftMargin)
@@ -115,24 +150,40 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             .below(of: title)
             .marginTop(Self.labelTopMargin)
 
-        actionButton.pin
-            .left(Self.labelLeftMargin)
-            .right(Self.orderRightMargin)
-            
-            .size(buttonSize(for: bounds.width))
-            .minHeight(Self.buttonMinHeight)
-            .below(of: message)
-            .marginTop(Self.buttonTopMargin)
+        scanButton.pin
+          .left(Self.labelLeftMargin)
+          .right(Self.orderRightMargin)
+          .size(buttonSize(for: bounds.width))
+          .minHeight(Self.buttonMinHeight)
+          .below(of: message)
+          .marginTop(Self.buttonTopMargin)
 
         imageContent.pin
             .after(of: title, aligned: .center)
             .sizeToFit()
+        
+        if code.text != "" {
+            
+            codeMessage.pin
+                .horizontally(20)
+                .sizeToFit(.width)
+                .marginTop(20)
+                .marginLeft(100)
+                .below(of: scanButton)
+            
+            code.pin
+              .horizontally(20)
+              .marginLeft(100)
+              .sizeToFit(.width)
+              .below(of: codeMessage)
+
+        }
     }
 
     func buttonSize(for width: CGFloat) -> CGSize {
         let labelWidth = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
 
-        var buttonSize = actionButton.titleLabel?.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.infinity)) ?? .zero
+        var buttonSize = uploadButton.titleLabel?.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.infinity)) ?? .zero
 
         buttonSize.width = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
         buttonSize.height = ScannerCellView.buttonMinHeight
@@ -146,7 +197,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             - 2 * ScannerCellView.containerInset - imageSize.width
         let titleSize = self.title.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
         let messageSize = self.message.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
-        let buttonSize = self.actionButton.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
+        let buttonSize = self.uploadButton.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
 
         return CGSize(
             width: size.width,
@@ -160,6 +211,25 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
 
 private extension ScannerCellView {
     enum Style {
+        static func code(_ label: UILabel, codeParts: NSAttributedString) {
+          let baseStyle = UIDevice.getByScreen(normal: TextStyles.alphanumericCode, narrow: TextStyles.alphanumericCodeSmall)
+          let textStyle = baseStyle.byAdding(
+            .color(Palette.grayDark),
+            .alignment(.left),
+            .lineBreakMode(.byTruncatingTail)
+          )
+            
+            TempuraStyles.styleShrinkableLabel(
+                label,
+                content: codeParts.string,
+                style: textStyle,
+                numberOfLines: 2
+            )
+
+//          label.numberOfLines = 0
+//          label.attributedText = codeParts
+        }
+        
         static func container(_ view: UIView) {
             view.backgroundColor = Palette.white
             view.layer.cornerRadius = SharedStyle.cardCornerRadius
@@ -180,8 +250,8 @@ private extension ScannerCellView {
             )
         }
 
-        static func message(_ label: UILabel) {
-            let content = "Premi su scansiona per proseguire"
+        static func message(_ label: UILabel, message: String) {
+            let content = message
             let textStyle = TextStyles.p.byAdding(
                 .color(Palette.grayNormal),
                 .alignment(.left)
