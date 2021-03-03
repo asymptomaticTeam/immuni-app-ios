@@ -28,6 +28,7 @@ struct HomeVM: ViewModelWithState {
     case app
     case updateCountry
     case dataUpload
+    case qrScanner
   }
 
   enum CellType: Equatable {
@@ -85,7 +86,8 @@ extension HomeVM {
     var cells: [CellType] = [
       .serviceActiveCard(isServiceActive: isServiceActive),
       .infoHeader,
-      .info(kind: .dataUpload),
+        .info(kind: .qrScanner),
+        .info(kind: .dataUpload),
       .info(kind: .updateCountry),
       .info(kind: .app)
     ]

@@ -31,6 +31,16 @@ extension Logic.DataUpload {
             try context.awaitDispatch(Show(Screen.qrScanner, animated: true, context: ScannerLS()))
         }
     }
+    struct ShowCheckStatus: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Show(Screen.checkStatus, animated: true, context: CheckStatusLS()))
+        }
+    }
+    struct ShowHealthPassport: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Show(Screen.healthPassport, animated: true, context: HealthPassportLS()))
+        }
+    }
     
   /// Shows the Upload Data screen
   struct ShowUploadData: AppSideEffect {

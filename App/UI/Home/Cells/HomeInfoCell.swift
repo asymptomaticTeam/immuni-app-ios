@@ -30,11 +30,15 @@ struct HomeInfoCellVM: ViewModel {
       return AnimationAsset.cardFlagEuropa.animation
     case .dataUpload:
       return AnimationAsset.cardDataUpload.animation
+    case .qrScanner:
+        return AnimationAsset.cardDataUpload.animation
     }
   }
 
   var title: String {
     switch self.kind {
+    case .qrScanner:
+      return "Segnala esito"
     case .protection:
       return L10n.HomeView.Info.Protection.title
     case .app:
@@ -56,6 +60,8 @@ struct HomeInfoCellVM: ViewModel {
       return false
     case .dataUpload:
       return true
+    case .qrScanner:
+      return false
     }
   }
 
@@ -68,6 +74,8 @@ struct HomeInfoCellVM: ViewModel {
     case .updateCountry:
       return .cardLightBlue
     case .dataUpload:
+      return .cardLightBlue
+    case .qrScanner:
       return .cardLightBlue
     }
   }

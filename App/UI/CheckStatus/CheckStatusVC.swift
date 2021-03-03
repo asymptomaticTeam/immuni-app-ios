@@ -1,4 +1,11 @@
 //
+//  CheckStatusVC.swift
+//  Immuni
+//
+//  Created by Lorenzo Spinucci on 03/03/21.
+//
+
+//
 //  import AVFoundation .swift
 //  DebugMenu
 //
@@ -13,7 +20,7 @@ import UIKit
 import Models
 import Networking
 
-class ScannerVC: ViewControllerWithLocalState<ScannerView>,
+class CheckStatusVC: ViewControllerWithLocalState<CheckStatusView>,
     AVCaptureMetadataOutputObjectsDelegate
 {
     override func viewDidLoad() {
@@ -95,7 +102,7 @@ class ScannerVC: ViewControllerWithLocalState<ScannerView>,
 
     override func setupInteraction() {
         rootView.didTapBack = { [weak self] in
-            self?.dispatch(Hide(Screen.qrScanner, animated: true))            
+            self?.dispatch(Hide(Screen.checkStatus, animated: true))
         }
 
         rootView.didTapScanAction = { [weak self] in
@@ -111,4 +118,4 @@ class ScannerVC: ViewControllerWithLocalState<ScannerView>,
 
 // MARK: - LocalState
 
-struct ScannerLS: LocalState {}
+struct CheckStatusLS: LocalState {}

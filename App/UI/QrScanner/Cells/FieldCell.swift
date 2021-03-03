@@ -17,12 +17,12 @@ import Tempura
 
 import Extensions
 
-struct ScannerCellVM: ViewModel {}
+struct FieldCellVM: ViewModel {}
 
 // MARK: - View
 
-class ScannerCellView: UIView, ModellableView, ReusableView {
-    typealias VM = ScannerCellVM
+class FieldCellView: UIView, ModellableView, ReusableView {
+    typealias VM = FieldCellVM
     
     static let containerInset: CGFloat = 25
     static let labelLeftMargin: CGFloat = 25
@@ -34,7 +34,6 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     static let containerMinHeight: CGFloat = 245
     static let orderRightMargin: CGFloat = UIDevice.getByScreen(normal: 70, narrow: 50)
     var heightContainer: CGFloat = 220
-    var marginContainer: CGFloat = 220
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,8 +57,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     private let code = UILabel()
     private var carica = false
 
-    var didTapUploadAction: Interaction?
-    var didTapScanAction: Interaction?
+    var didTapFieldAction: Interaction?
     
     private let backgroundGradientView = GradientView()
     private let title2 = UILabel()
@@ -82,47 +80,36 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
 
     private let containerForm = UIView()
     private let containerCallCenter = UIView()
-
-    private var actionButtonAutonomous = ButtonWithInsets()
-    private var actionButtonCallCenter = ButtonWithInsets()
     
-    
-    
-
     // MARK: - Setup
 
     func setup() {
-       
+        addSubview(containerForm)
+
+//        containerForm.addSubview(iconAutonomous)
+//        containerForm.addSubview(titleAutonomous)
+//        containerForm.addSubview(textFieldCun)
+//        containerForm.addSubview(textFieldHealthCard)
+//        containerForm.addSubview(pickerFieldSymptomsDate)
+//        containerForm.addSubview(asymptomaticCheckBox)
+//        containerForm.addSubview(actionButtonAutonomous)
+        
         addSubview(container)
         container.addSubview(title)
         container.addSubview(message)
-        container.addSubview(codeMessage)
-        container.addSubview(uploadButton)
+        container.addSubview(textFieldCun)
         container.addSubview(scanButton)
         container.addSubview(imageContent)
-        container.addSubview(code)
 
-        container.accessibilityElements = [title, message, codeMessage, scanButton, uploadButton, imageContent]
+
+        container.accessibilityElements = [title, message, codeMessage, textFieldCun, scanButton, uploadButton, imageContent]
 
         uploadButton.on(.touchUpInside) { [weak self] _ in
 
         }
         scanButton.on(.touchUpInside) { [weak self] _ in
             guard let self = self else { return }
-            
-            Self.Style.code(self.code, codeParts: NSAttributedString(string: "74936292"))
-            SharedStyle.primaryButton(self.scanButton, title: "Carica")
-            self.heightContainer = 305
-
-            self.setNeedsLayout()
-            
-            if self.carica {
-                self.didTapUploadAction?()
-            }
-            else{
-                self.carica.toggle()
-                self.didTapScanAction?()
-            }
+               self.didTapFieldAction?()
         }
     }
 
@@ -131,14 +118,13 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     func style() {
         Self.Style.container(container)
         Self.Style.title(title)
-        Self.Style.message(message, message: "Premi su scansiona per proseguire")
+        Self.Style.message(message, message: "Inserisci il codice del referto")
         Self.Style.message(codeMessage, message: "Ecco il tuo codice")
         let attString = NSAttributedString(string: "")
         Self.Style.code(self.code, codeParts: attString)
-        SharedStyle.primaryButton(scanButton, title: "Scansiona")
+        SharedStyle.primaryButton(scanButton, title: "Carica")
         SharedStyle.primaryButton(uploadButton, title: "Carica")
         Self.Style.imageContent(imageContent, image: Asset.Settings.UploadData.stethoscope.image)
-        
     }
 
     // MARK: - Update
@@ -159,7 +145,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             .vertically()
             .horizontally(25)
             .marginTop(Self.labelTopMargin)
-            .height(heightContainer)
+            .height(280)
 
         title.pin
             .left(Self.labelLeftMargin)
@@ -173,52 +159,57 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             .sizeToFit(.width)
             .below(of: title)
             .marginTop(Self.labelTopMargin)
+        
+        textFieldCun.pin
+            .horizontally(25)
+            .below(of: message)
+            .marginTop(25)
+            .height(50)
 
         scanButton.pin
           .left(Self.labelLeftMargin)
           .right(Self.orderRightMargin)
           .size(buttonSize(for: bounds.width))
           .minHeight(Self.buttonMinHeight)
-          .below(of: message)
+          .below(of: textFieldCun)
           .marginTop(Self.buttonTopMargin)
 
         imageContent.pin
             .after(of: title, aligned: .center)
             .sizeToFit()
         
-        if code.text != "" {
             
             codeMessage.pin
                 .horizontally(20)
                 .sizeToFit(.width)
                 .marginTop(20)
-                .marginLeft(75)
+                .marginLeft(100)
                 .below(of: scanButton)
             
             code.pin
               .horizontally(20)
-              .marginLeft(75)
+              .marginLeft(100)
               .sizeToFit(.width)
               .below(of: codeMessage)
 
-        }
+        
     }
 
     func buttonSize(for width: CGFloat) -> CGSize {
-        let labelWidth = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
+        let labelWidth = width - FieldCellView.orderRightMargin - FieldCellView.labelLeftMargin
 
         var buttonSize = uploadButton.titleLabel?.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.infinity)) ?? .zero
 
-        buttonSize.width = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
-        buttonSize.height = ScannerCellView.buttonMinHeight
+        buttonSize.width = width - FieldCellView.orderRightMargin - FieldCellView.labelLeftMargin
+        buttonSize.height = FieldCellView.buttonMinHeight
 
         return buttonSize
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         let imageSize = imageContent.intrinsicContentSize
-        let labelWidth = size.width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
-            - 2 * ScannerCellView.containerInset - imageSize.width
+        let labelWidth = size.width - FieldCellView.orderRightMargin - FieldCellView.labelLeftMargin
+            - 2 * FieldCellView.containerInset - imageSize.width
         let titleSize = self.title.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
         let messageSize = self.message.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
         let buttonSize = self.uploadButton.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
@@ -233,7 +224,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
 
 // MARK: - Style
 
-private extension ScannerCellView {
+private extension FieldCellView {
     enum Style {
         static func code(_ label: UILabel, codeParts: NSAttributedString) {
           let baseStyle = UIDevice.getByScreen(normal: TextStyles.alphanumericCode, narrow: TextStyles.alphanumericCodeSmall)
@@ -249,9 +240,6 @@ private extension ScannerCellView {
                 style: textStyle,
                 numberOfLines: 2
             )
-
-//          label.numberOfLines = 0
-//          label.attributedText = codeParts
         }
         
         static func container(_ view: UIView) {
@@ -261,7 +249,7 @@ private extension ScannerCellView {
         }
 
         static func title(_ label: UILabel) {
-            let content = "Vuoi fare una scansione del referto?"
+            let content = "Vuoi caricare manualmente il referto?"
             let textStyle = TextStyles.h4.byAdding(
                 .color(Palette.purple),
                 .alignment(.left)

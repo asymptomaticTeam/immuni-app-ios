@@ -1,13 +1,20 @@
+//
+//  CheckStatusView.swift
+//  Immuni
+//
+//  Created by Lorenzo Spinucci on 03/03/21.
+//
+
 
 import Foundation
 import Models
 import Tempura
 import Lottie
 
-struct ScannerVM: ViewModelWithLocalState {}
+struct CheckStatusVM: ViewModelWithLocalState {}
 
-extension ScannerVM {
-    init?(state: AppState?, localState _: ScannerLS) {
+extension CheckStatusVM {
+    init?(state: AppState?, localState _: CheckStatusLS) {
         guard let _ = state else {
             return nil
         }
@@ -16,13 +23,12 @@ extension ScannerVM {
 
 // MARK: - View
 
-class ScannerView: UIView, ViewControllerModellableView {
-    typealias VM = ScannerVM
+class CheckStatusView: UIView, ViewControllerModellableView {
+    typealias VM = CheckStatusVM
 
     private static let horizontalSpacing: CGFloat = 30.0
     static let orderRightMargin: CGFloat = UIDevice.getByScreen(normal: 70, narrow: 50)
     static let labelLeftMargin: CGFloat = 25
-     var choiceMargin: CGFloat = 10
 
     private let backgroundGradientView = GradientView()
     private let title = UILabel()
@@ -31,8 +37,7 @@ class ScannerView: UIView, ViewControllerModellableView {
     private var backButton = ImageButton()
     let scrollView = UIScrollView()
 
-    private let scannerCard = ScannerCellView()
-    private let fieldCard = FieldCellView()
+    private let checkStatusCard = CheckStatusCellView()
     let checkmark = AnimationView()
     let titleLabel = UILabel()
     let detailsLabel = UILabel()
@@ -54,20 +59,16 @@ class ScannerView: UIView, ViewControllerModellableView {
 //        addSubview(code)
 
 
-        scrollView.addSubview(scannerCard)
-        scrollView.addSubview(choice)
+        scrollView.addSubview(checkStatusCard)
+//        scrollView.addSubview(choice)
         
-        scrollView.addSubview(fieldCard)
-
         backButton.on(.touchUpInside) { [weak self] _ in
             self?.didTapBack?()
         }
-        scannerCard.didTapScanAction = { [weak self] in
-            self?.choiceMargin = 90
-            self?.setNeedsLayout()
+        checkStatusCard.didTapScanAction = { [weak self] in
             self?.didTapScanAction?()
         }
-        scannerCard.didTapUploadAction = { [weak self] in
+        checkStatusCard.didTapUploadAction = { [weak self] in
             self?.success.toggle()
             self?.subviews.first?.removeFromSuperview()
             self?.subviews.first?.removeFromSuperview()
@@ -75,25 +76,15 @@ class ScannerView: UIView, ViewControllerModellableView {
             self?.subviews.first?.removeFromSuperview()
             self?.setNeedsLayout()
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                self?.didTapBack?()
                // Code you want to be delayed
+                self?.didTapBack?()
             }
         }
-        fieldCard.didTapFieldAction = { [weak self] in
-            self?.success.toggle()
-            self?.subviews.first?.removeFromSuperview()
-            self?.subviews.first?.removeFromSuperview()
-            self?.subviews.first?.removeFromSuperview()
-            self?.subviews.first?.removeFromSuperview()
-            self?.setNeedsLayout()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                self?.didTapBack?()
-               // Code you want to be delayed
-            }
-        }
-        
-        
+        print("gigi",self.subviews.description)
+        self.subviews.forEach{
+            print("gigi",$0.description)
 
+        }
     }
 
     // MARK: - Style
@@ -128,7 +119,6 @@ class ScannerView: UIView, ViewControllerModellableView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        if !success {
         backgroundGradientView.pin.all()
         
         backButton.pin
@@ -147,48 +137,19 @@ class ScannerView: UIView, ViewControllerModellableView {
             .marginTop(5)
             .bottom(universalSafeAreaInsets.bottom)
 
-        scannerCard.pin
+        checkStatusCard.pin
             .horizontally()
             .sizeToFit(.width)
             .marginTop(25)
-            
-        choice.pin
-            .below(of: scannerCard)
-            .marginTop(choiceMargin)
-            .horizontally(Self.horizontalSpacing + backButton.intrinsicContentSize.width + 5)
-            .sizeToFit(.width)
-            
-        fieldCard.pin
-            .horizontally()
-            .below(of: choice)
-            .sizeToFit(.width)
-            .marginTop(15)
-
-        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: fieldCard.frame.maxY)
-        }
-        else {
-            self.titleLabel.pin
-              .horizontally(30)
-              .sizeToFit(.width)
-              .top(to: self.edge.vCenter)
-
-            self.checkmark.pin
-              .size(100)
-              .hCenter()
-              .bottom(to: self.edge.vCenter)
-
-            self.detailsLabel.pin
-              .horizontally(30)
-              .below(of: self.titleLabel)
-              .marginTop(20)
-              .sizeToFit(.width)
-        }
+        
+        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: checkStatusCard.frame.maxY)
+        
     }
 }
 
 // MARK: - Style
 
-private extension ScannerView {
+private extension CheckStatusView {
     enum Style {
         
 
@@ -244,7 +205,7 @@ private extension ScannerView {
         }
 
         static func title(_ label: UILabel) {
-            let content = "Scansione documenti"
+            let content = "Verifica stato"
             TempuraStyles.styleShrinkableLabel(
                 label,
                 content: content,

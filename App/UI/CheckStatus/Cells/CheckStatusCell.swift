@@ -1,3 +1,10 @@
+//
+//  CheckStatusCell.swift
+//  Immuni
+//
+//  Created by Lorenzo Spinucci on 03/03/21.
+//
+
 // DataUploadHealthWorkerMode.swift
 // Copyright (C) 2020 Presidenza del Consiglio dei Ministri.
 // Please refer to the AUTHORS file for more information.
@@ -17,15 +24,15 @@ import Tempura
 
 import Extensions
 
-struct ScannerCellVM: ViewModel {}
+struct CheckStatusCellVM: ViewModel {}
 
 // MARK: - View
 
-class ScannerCellView: UIView, ModellableView, ReusableView {
-    typealias VM = ScannerCellVM
+class CheckStatusCellView: UIView, ModellableView, ReusableView {
+    typealias VM = CheckStatusCellVM
     
     static let containerInset: CGFloat = 25
-    static let labelLeftMargin: CGFloat = 25
+    static let labelLeftMargin: CGFloat = 40
     static let labelBottomMargin: CGFloat = 10
     static let imageRightMargin: CGFloat = 10
     static let labelTopMargin: CGFloat = 10
@@ -34,7 +41,6 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     static let containerMinHeight: CGFloat = 245
     static let orderRightMargin: CGFloat = UIDevice.getByScreen(normal: 70, narrow: 50)
     var heightContainer: CGFloat = 220
-    var marginContainer: CGFloat = 220
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,6 +62,10 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     private var uploadButton = ButtonWithInsets()
     private var imageContent = UIImageView()
     private let code = UILabel()
+    private let tampone = UILabel()
+    private let vaccino1 = UILabel()
+    private let vaccino2 = UILabel()
+    private let status = UILabel()
     private var carica = false
 
     var didTapUploadAction: Interaction?
@@ -70,7 +80,6 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     private let titleCallCenter = UILabel()
     private let iconCallCenter = UIImageView()
 
-    private let choice = UILabel()
     private var backButton = ImageButton()
     let scrollView = UIScrollView()
     private let headerView = UploadDataAutonomousHeaderView()
@@ -92,7 +101,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
     // MARK: - Setup
 
     func setup() {
-       
+        
         addSubview(container)
         container.addSubview(title)
         container.addSubview(message)
@@ -101,23 +110,24 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
         container.addSubview(scanButton)
         container.addSubview(imageContent)
         container.addSubview(code)
+        container.addSubview(tampone)
+        container.addSubview(vaccino1)
+        container.addSubview(vaccino2)
+        container.addSubview(status)
 
         container.accessibilityElements = [title, message, codeMessage, scanButton, uploadButton, imageContent]
 
-        uploadButton.on(.touchUpInside) { [weak self] _ in
-
-        }
         scanButton.on(.touchUpInside) { [weak self] _ in
             guard let self = self else { return }
             
             Self.Style.code(self.code, codeParts: NSAttributedString(string: "74936292"))
-            SharedStyle.primaryButton(self.scanButton, title: "Carica")
-            self.heightContainer = 305
-
+//            SharedStyle.primaryButton(self.scanButton, title: "Carica")
+            self.heightContainer = 460
             self.setNeedsLayout()
             
             if self.carica {
-                self.didTapUploadAction?()
+                self.carica.toggle()
+//                self.didTapUploadAction?()
             }
             else{
                 self.carica.toggle()
@@ -132,7 +142,12 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
         Self.Style.container(container)
         Self.Style.title(title)
         Self.Style.message(message, message: "Premi su scansiona per proseguire")
-        Self.Style.message(codeMessage, message: "Ecco il tuo codice")
+        Self.Style.message(codeMessage, message: "Codice del referto: 74936292")
+        Self.Style.message(tampone, message: "Data ultimo tampone: 19/01/21")
+        Self.Style.message(vaccino1, message: "Stato primo vaccino: Ok")
+        Self.Style.message(vaccino2, message: "Stato secondo vaccino: Ko")
+        Self.Style.message(tampone, message: "Data ultimo tampone: 19/01/21")
+        Self.Style.message(status, message: "Status: OK")
         let attString = NSAttributedString(string: "")
         Self.Style.code(self.code, codeParts: attString)
         SharedStyle.primaryButton(scanButton, title: "Scansiona")
@@ -159,7 +174,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             .vertically()
             .horizontally(25)
             .marginTop(Self.labelTopMargin)
-            .height(heightContainer)
+            .height(self.heightContainer)
 
         title.pin
             .left(Self.labelLeftMargin)
@@ -191,34 +206,57 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
             codeMessage.pin
                 .horizontally(20)
                 .sizeToFit(.width)
-                .marginTop(20)
-                .marginLeft(75)
+                .marginTop(40)
+                .marginLeft(40)
+                .left(Self.labelLeftMargin)
                 .below(of: scanButton)
-            
-            code.pin
-              .horizontally(20)
-              .marginLeft(75)
-              .sizeToFit(.width)
-              .below(of: codeMessage)
+            status.pin
+                .horizontally(20)
+                .sizeToFit(.width)
+                .marginTop(20)
+                .marginLeft(40)
+                .left(Self.labelLeftMargin)
+                .below(of: codeMessage)
+            tampone.pin
+                .horizontally(20)
+                .sizeToFit(.width)
+                .marginTop(20)
+                .marginLeft(40)
+                .left(Self.labelLeftMargin)
+                .below(of: status)
+            vaccino1.pin
+                .horizontally(20)
+                .sizeToFit(.width)
+                .marginTop(20)
+                .marginLeft(40)
+                .left(Self.labelLeftMargin)
+                .below(of: tampone)
+            vaccino2.pin
+                .horizontally(20)
+                .sizeToFit(.width)
+                .marginTop(20)
+                .marginLeft(40)
+                .left(Self.labelLeftMargin)
+                .below(of: vaccino1)
 
         }
     }
 
     func buttonSize(for width: CGFloat) -> CGSize {
-        let labelWidth = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
+        let labelWidth = width - CheckStatusCellView.orderRightMargin - CheckStatusCellView.labelLeftMargin
 
         var buttonSize = uploadButton.titleLabel?.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.infinity)) ?? .zero
 
-        buttonSize.width = width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
-        buttonSize.height = ScannerCellView.buttonMinHeight
+        buttonSize.width = width - CheckStatusCellView.orderRightMargin - CheckStatusCellView.labelLeftMargin
+        buttonSize.height = CheckStatusCellView.buttonMinHeight
 
         return buttonSize
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         let imageSize = imageContent.intrinsicContentSize
-        let labelWidth = size.width - ScannerCellView.orderRightMargin - ScannerCellView.labelLeftMargin
-            - 2 * ScannerCellView.containerInset - imageSize.width
+        let labelWidth = size.width - CheckStatusCellView.orderRightMargin - CheckStatusCellView.labelLeftMargin
+            - 2 * CheckStatusCellView.containerInset - imageSize.width
         let titleSize = self.title.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
         let messageSize = self.message.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
         let buttonSize = self.uploadButton.sizeThatFits(CGSize(width: labelWidth, height: .infinity))
@@ -233,7 +271,7 @@ class ScannerCellView: UIView, ModellableView, ReusableView {
 
 // MARK: - Style
 
-private extension ScannerCellView {
+private extension CheckStatusCellView {
     enum Style {
         static func code(_ label: UILabel, codeParts: NSAttributedString) {
           let baseStyle = UIDevice.getByScreen(normal: TextStyles.alphanumericCode, narrow: TextStyles.alphanumericCodeSmall)
@@ -261,7 +299,7 @@ private extension ScannerCellView {
         }
 
         static func title(_ label: UILabel) {
-            let content = "Vuoi fare una scansione del referto?"
+            let content = "Vuoi fare una scansione di un passaporto?"
             let textStyle = TextStyles.h4.byAdding(
                 .color(Palette.purple),
                 .alignment(.left)
