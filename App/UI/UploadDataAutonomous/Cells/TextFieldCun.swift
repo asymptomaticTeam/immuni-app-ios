@@ -34,7 +34,7 @@ open class TextFieldCun: UIView, ModellableView {
     private let container = UIView()
     private let textFieldIcon = UIImageView()
     private let textfield = UITextField()
-    static let prefixCun: String = OTP.prefixCun
+    static let prefixCun: String = ""
     var onFocus: Bool = false
 
     var didChangeSearchStatus: CustomInteraction<Bool>?
@@ -62,6 +62,10 @@ open class TextFieldCun: UIView, ModellableView {
     public func style() {
         Self.Style.container(container)
         Self.Style.textfield(textfield)
+        Self.Style.shadow(container)
+        Self.Style.textFieldIcon(textFieldIcon, onFocus: onFocus)
+
+        setNeedsLayout()
     }
 
     public func update(oldModel _: TextFieldCunVM?) {
@@ -133,7 +137,7 @@ extension TextFieldCun {
             textfield.tintColor = Palette.primary
             textfield.typingAttributes = textStyle.attributes
             textfield.defaultTextAttributes = textStyle.attributes
-            let placeholder = NSAttributedString(string: L10n.Settings.Setting.LoadDataAutonomous.Cun.placeholder)
+            let placeholder = NSAttributedString(string: "Codice del referto")
             textfield.attributedPlaceholder = placeholder.styled(with: placeholderStyle)
         }
     }
@@ -166,33 +170,9 @@ extension TextFieldCun: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        let protectedRange = NSRange(location: 0, length: 4)
-        let intersection = NSIntersectionRange(protectedRange, range)
+     
 
-        if range.location < 4 || textField.text?.count ?? 0 > 13 {
-            if string.isEmpty && range.location > 3{
-                let result = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) ?? string
-                didChangeTextValue?(result.deletingPrefixCun(prefix: Self.prefixCun))
-                return true
-            }
-            return false
-        }
-
-        if intersection.length > 0 {
-            return false
-        }
-        if range.location == 13 {
-            let result = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) ?? string
-            didChangeTextValue?(result.deletingPrefixCun(prefix: Self.prefixCun))
-            return true
-        }
-        if range.location + range.length > 13 {
-            return false
-        }
-
-        let result = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) ?? string
-
-        didChangeTextValue?(result.deletingPrefixCun(prefix: Self.prefixCun))
+       
 
         return true
     }

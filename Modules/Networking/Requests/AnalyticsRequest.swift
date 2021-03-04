@@ -21,7 +21,7 @@ import PushNotification
 
 public struct AnalyticsRequest: Equatable, JSONRequest {
   // swiftlint:disable:next force_unwrapping
-  public var baseURL = URL(string: "https://analytics.immuni.gov.it")!
+    public var baseURL = URL(string: "https://testaka3.sogei.it")!
 
   public var path = "/v1/analytics/apple/operational-info"
   public var method: HTTPMethod = .post

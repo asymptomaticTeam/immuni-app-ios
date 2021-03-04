@@ -24,6 +24,12 @@ struct SettingCellVM: ViewModel, CellWithShadow {
     switch self.setting {
     case .loadData:
       return L10n.Settings.Setting.loadData
+    case .reportOutcome:
+      return "Segnala esito"
+    case .healthPassport:
+      return "Passaporto sanitario"
+    case .checkStatus:
+      return "Verifica stato"
     case .faq:
       return L10n.Settings.Setting.faq
     case .tos:
@@ -47,7 +53,7 @@ struct SettingCellVM: ViewModel, CellWithShadow {
 
   var icon: UIImage? {
     switch self.setting {
-    case .loadData, .faq:
+    case .loadData, .faq, .reportOutcome, .healthPassport, .checkStatus:
       return Asset.Settings.settingsNext.image
     case .shareApp:
       return Asset.Settings.settingsShare.image

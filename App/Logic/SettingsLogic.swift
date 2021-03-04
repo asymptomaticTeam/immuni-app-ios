@@ -28,6 +28,23 @@ extension Logic {
 }
 
 extension Logic.Settings {
+    
+    struct ShowQrScanner: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Logic.DataUpload.ShowQrScanner())
+        }
+    }
+    struct ShowCheckStatus: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Logic.DataUpload.ShowCheckStatus())
+        }
+    }
+    struct ShowHealthPassport: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Logic.DataUpload.ShowHealthPassport())
+        }
+    }
+    
   /// Shows the Upload Data screen
   struct ShowUploadData: AppSideEffect {
     

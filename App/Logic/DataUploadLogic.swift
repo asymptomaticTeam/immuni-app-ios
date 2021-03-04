@@ -25,6 +25,23 @@ extension Logic {
 }
 
 extension Logic.DataUpload {
+    
+    struct ShowQrScanner: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Show(Screen.qrScanner, animated: true, context: ScannerLS()))
+        }
+    }
+    struct ShowCheckStatus: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Show(Screen.checkStatus, animated: true, context: CheckStatusLS()))
+        }
+    }
+    struct ShowHealthPassport: AppSideEffect {
+        func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+            try context.awaitDispatch(Show(Screen.healthPassport, animated: true, context: HealthPassportLS()))
+        }
+    }
+    
   /// Shows the Upload Data screen
   struct ShowUploadData: AppSideEffect {
     /// A threshold to make past failed attempts expire, so that in case of another failed attempt after a long time the
@@ -91,6 +108,25 @@ extension Logic.DataUpload {
     
     let model = Alert.Model(
         title: L10n.Settings.Setting.LoadDataAutonomous.FormError.title,
+        message: message,
+        preferredStyle: .alert,
+        actions: [
+            .init(title: L10n.UploadData.ApiError.action, style: .cancel)
+        ]
+    )
+
+    try context.awaitDispatch(Logic.Alert.Show(alertModel: model))
+    }
+}
+    
+    /// Shows the alert that confirm qr scan
+  struct ShowConfirmScanAlert: AppSideEffect {
+    let message: String
+
+    func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+    
+    let model = Alert.Model(
+        title: "Scansione effettuata con successo",
         message: message,
         preferredStyle: .alert,
         actions: [
@@ -290,6 +326,27 @@ extension Logic.DataUpload {
       try context.awaitDispatch(Hide(Screen.uploadDataAutonomous, animated: true))
     }
   }
+    
+    /// Handles the data confirmation flow
+    struct ConfirmDataQr: AppSideEffect {
+
+      func sideEffect(_ context: SideEffectContext<AppState, AppDependencies>) throws {
+        let state = context.getState()
+
+//        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+        try await(Promise<Void>(resolved: ()).defer(3))
+        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+        try await(Promise<Void>(resolved: ()).defer(3))
+
+//        try context.awaitDispatch(Show(Screen.confirmation, animated: true, context: ConfirmationLS.uploadDataCompleted))
+
+        
+        try context.awaitDispatch(Hide(Screen.confirmation, animated: true))
+//        try context.awaitDispatch(Hide(Screen.confirmUpload, animated: true))
+//        try context.awaitDispatch(Hide(Screen.uploadData, animated: true))
+//        try context.awaitDispatch(Hide(Screen.uploadDataAutonomous, animated: true))
+      }
+    }
 
   /// Checks that the exposure notifications permissions is authorized
   struct AssertExposureNotificationPermissionGranted: SideEffect {

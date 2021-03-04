@@ -1,4 +1,4 @@
-// ConfigurationRequest.swift
+// ChooseDataUploadModeVC.swift
 // Copyright (C) 2020 Presidenza del Consiglio dei Ministri.
 // Please refer to the AUTHORS file for more information.
 // This program is free software: you can redistribute it and/or modify
@@ -12,27 +12,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-import Alamofire
 import Foundation
 import Models
+import Tempura
 
-public struct ConfigurationRequest: ModelResponseSerializer {
-  public typealias Model = Configuration
+class HealthPassportVC: ViewControllerWithLocalState<HealthPassportView> {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
 
-  // swiftlint:disable:next force_unwrapping
-  public var baseURL = URL(string: "https://testaka1.sogei.it")!
-  public var path = "/v1/settings"
-  public var method: HTTPMethod = .get
-  public var cachePolicy: NSURLRequest.CachePolicy = .immuniPolicy
+    override func setupInteraction() {
+        rootView.didTapBack = { [weak self] in
+            self?.dispatch(Hide(Screen.healthPassport, animated: true))
+        }
 
-  public let parameters: [String: Any]
-
-  public var headers: [HTTPHeader] = HTTPHeader.defaultImmuniHeaders
-
-  init(buildNumber: Int) {
-    self.parameters = [
-      "platform": "ios",
-      "build": buildNumber
-    ]
-  }
+    }
 }
+
+// MARK: - LocalState
+
+struct HealthPassportLS: LocalState {}

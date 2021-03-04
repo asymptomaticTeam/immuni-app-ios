@@ -40,6 +40,12 @@ private extension SettingsVC {
     switch setting {
     case .loadData:
       self.dispatch(Logic.Settings.ShowChooseDataUploadMode())
+    case .reportOutcome:
+      self.dispatch(Logic.Settings.ShowQrScanner())
+    case .healthPassport:
+      self.dispatch(Logic.Settings.ShowHealthPassport())
+    case .checkStatus:
+      self.dispatch(Logic.Settings.ShowCheckStatus())
     case .faq:
       self.dispatch(Logic.Settings.ShowFAQs())
     case .tos:

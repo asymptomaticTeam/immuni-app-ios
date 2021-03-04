@@ -57,6 +57,10 @@ enum Screen: String, CaseIterable {
   case question
   case chooseDataUploadMode
   case uploadDataAutonomous
+  case qrScanner
+  case healthPassport
+  case checkStatus
+
 }
 
 // MARK: - Root
@@ -90,6 +94,12 @@ extension AppDelegate {
     case .chooseDataUploadMode:
       mainViewController = HomeNC(store: self.store)
 
+    case .qrScanner:
+        mainViewController = HomeNC(store: store)
+    case .healthPassport:
+        mainViewController = HomeNC(store: store)
+    case .confirmation:
+        mainViewController = ConfirmationVC(store: store, localState: ConfirmationLS(title: "Dati caricati con successo", details: "Grazie per il tuo contributo"))
     default:
       AppLogger.fatalError("Root screen not handled: \(rootScreen.rawValue)")
     }
@@ -446,6 +456,15 @@ extension SettingsNC: RoutableWithConfiguration {
       .show(Screen.chooseDataUploadMode): .push { _ in
         return ChooseDataUploadModeVC(store: self.store, localState: ChooseDataUploadModeLS())
                 },
+        .show(Screen.qrScanner): .push { context in
+            return ScannerVC(store: self.store, localState: ScannerLS())
+        },
+        .show(Screen.healthPassport): .push { context in
+            return HealthPassportVC(store: self.store, localState: HealthPassportLS())
+        },
+        .show(Screen.checkStatus): .push { context in
+            return CheckStatusVC(store: self.store, localState: CheckStatusLS())
+        },
       .show(Screen.faq): .push { _ in
         FaqVC(store: self.store, localState: FAQLS(isPresentedModally: false))
       },
@@ -475,7 +494,10 @@ extension SettingsNC: RoutableWithConfiguration {
       .hide(Screen.updateProvince): .dismissModally(behaviour: .hard),
       .hide(Screen.privacy): .dismissModally(behaviour: .hard),
       .hide(Screen.chooseDataUploadMode): .pop,
-      .hide(Screen.uploadDataAutonomous): .pop
+      .hide(Screen.uploadDataAutonomous): .pop,
+      .hide(Screen.qrScanner): .pop,
+      .hide(Screen.healthPassport): .pop,
+      .hide(Screen.checkStatus): .pop
 
     ]
   }
@@ -504,6 +526,16 @@ extension HomeNC: RoutableWithConfiguration {
           return ChooseDataUploadModeVC(store: self.store, localState: ChooseDataUploadModeLS())
         },
         
+        .show(Screen.qrScanner): .push { _ in
+            ScannerVC(store: self.store, localState: ScannerLS())
+        },
+        .show(Screen.healthPassport): .push { _ in
+            HealthPassportVC(store: self.store, localState: HealthPassportLS())
+        },
+
+        
+        .hide(Screen.healthPassport): .pop,
+        .hide(Screen.qrScanner): .pop,
       .hide(Screen.uploadData): .pop,
       .hide(Screen.chooseDataUploadMode): .pop,
       .hide(Screen.uploadDataAutonomous): .pop,
@@ -542,6 +574,33 @@ extension ChooseDataUploadModeVC: RoutableWithConfiguration {
   }
 }
 
+extension ScannerVC: RoutableWithConfiguration {
+    var routeIdentifier: RouteElementIdentifier {
+        return Screen.qrScanner.rawValue
+    }
+
+    var navigationConfiguration: [NavigationRequest: NavigationInstruction] {
+        return [:]
+    }
+}
+extension HealthPassportVC: RoutableWithConfiguration {
+    var routeIdentifier: RouteElementIdentifier {
+        return Screen.healthPassport.rawValue
+    }
+
+    var navigationConfiguration: [NavigationRequest: NavigationInstruction] {
+        return [:]
+    }
+}
+extension CheckStatusVC: RoutableWithConfiguration {
+    var routeIdentifier: RouteElementIdentifier {
+        return Screen.checkStatus.rawValue
+    }
+
+    var navigationConfiguration: [NavigationRequest: NavigationInstruction] {
+        return [:]
+    }
+}
 extension ConfirmUploadVC: RoutableWithConfiguration {
   var routeIdentifier: RouteElementIdentifier {
     return Screen.confirmUpload.rawValue

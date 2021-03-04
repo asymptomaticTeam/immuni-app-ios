@@ -55,7 +55,6 @@ class HomeVC: ViewController<HomeView> {
     switch info {
     case .app:
       self.dispatch(Logic.PermissionTutorial.ShowHowImmuniWorks(showFaqButton: true))
-
     case .protection:
       self.dispatch(Logic.Suggestions.ShowSuggestions())
 
@@ -64,6 +63,8 @@ class HomeVC: ViewController<HomeView> {
         
     case .dataUpload:
       self.dispatch(Logic.Settings.ShowChooseDataUploadMode())
+    case .qrScanner:
+      self.dispatch(Logic.Settings.ShowQrScanner())
     }
   }
 }
