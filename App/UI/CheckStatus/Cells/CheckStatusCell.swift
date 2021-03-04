@@ -142,12 +142,11 @@ class CheckStatusCellView: UIView, ModellableView, ReusableView {
         Self.Style.container(container)
         Self.Style.title(title)
         Self.Style.message(message, message: "Premi su scansiona per proseguire")
-        Self.Style.message(codeMessage, message: "Codice del referto: 74936292")
-        Self.Style.message(tampone, message: "Data ultimo tampone: 19/01/21")
-        Self.Style.message(vaccino1, message: "Stato primo vaccino: Ok")
-        Self.Style.message(vaccino2, message: "Stato secondo vaccino: Ko")
-        Self.Style.message(tampone, message: "Data ultimo tampone: 19/01/21")
-        Self.Style.message(status, message: "Status: OK")
+        Self.Style.message(codeMessage, message: "Codice del referto:       <u>74936292</u>")
+        Self.Style.message(tampone, message: "Data tampone:                <u>19/01/21</u>")
+        Self.Style.message(vaccino1, message: "Stato primo vaccino:            <u>Ok</u>")
+        Self.Style.message(vaccino2, message: "Stato secondo vaccino:       <u>Ko</u>")
+        Self.Style.message(status, message: "Status:                                      <u>OK</u>")
         let attString = NSAttributedString(string: "")
         Self.Style.code(self.code, codeParts: attString)
         SharedStyle.primaryButton(scanButton, title: "Scansiona")
@@ -273,6 +272,14 @@ class CheckStatusCellView: UIView, ModellableView, ReusableView {
 
 private extension CheckStatusCellView {
     enum Style {
+        static func container2(_ view: UIView) {
+            view.backgroundColor = Palette.white
+            view.layer.cornerRadius = 25
+        }
+
+        static func shadow(_ view: UIView) {
+            view.addShadow(.cardLightBlue)
+        }
         static func code(_ label: UILabel, codeParts: NSAttributedString) {
           let baseStyle = UIDevice.getByScreen(normal: TextStyles.alphanumericCode, narrow: TextStyles.alphanumericCodeSmall)
           let textStyle = baseStyle.byAdding(
@@ -316,7 +323,10 @@ private extension CheckStatusCellView {
             let content = message
             let textStyle = TextStyles.p.byAdding(
                 .color(Palette.grayNormal),
-                .alignment(.left)
+                .alignment(.left),
+                .xmlRules([
+                  .style("u", TextStyles.pAnchor)
+                ])
             )
 
             TempuraStyles.styleStandardLabel(
